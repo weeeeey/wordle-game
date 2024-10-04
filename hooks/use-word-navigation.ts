@@ -27,9 +27,13 @@ const useWordNavigation = () => {
         router.push(`/${isExist}`);
     };
 
-    const handleClick = async (isRandom: boolean) => {
+    const handleClick = async ({
+        getRandomWord,
+    }: {
+        getRandomWord: boolean;
+    }) => {
         try {
-            const res = await fetch(`/api/word?isRandom=${isRandom}`);
+            const res = await fetch(`/api/word?isRandom=${getRandomWord}`);
 
             const data = await res.json();
             setPlayerInfo('totalPlayCount');
