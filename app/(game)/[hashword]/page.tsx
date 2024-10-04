@@ -27,9 +27,6 @@ export default function GamePage({ params }: GamePageProps) {
     } = useWordleState(params.hashword);
     useInitPlayerInfo();
     usePlayTime();
-    useEffect(() => {
-        console.log('start', new Date());
-    }, []);
 
     return (
         <section className="flex flex-col justify-center items-center gap-y-4 h-full ">
