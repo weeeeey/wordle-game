@@ -40,7 +40,7 @@ const useWordNavigation = () => {
             const data = await res.json();
             if (data.error) throw new Error(data.error);
             setPlayerInfo('totalPlayCount');
-            setPlayerInfo('playTime', 0);
+            // setPlayerInfo('playTime', 0);
             router.push(`/${data.hashedWord}`);
         } catch (error) {
             if (error instanceof Error) {

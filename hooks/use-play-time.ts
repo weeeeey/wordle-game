@@ -1,5 +1,5 @@
 import { setPlayerInfo } from '@/actions';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  *
@@ -8,12 +8,18 @@ import { useEffect } from 'react';
  */
 
 const usePlayTime = () => {
+    const startDate = useRef<null | number>(null);
     useEffect(() => {
-        const startDate = Date.now();
+        startDate.current = Date.now();
+        const s = Date.now();
         return () => {
-            const endDate = Date.now();
-            const duration = endDate - startDate;
-            setPlayerInfo('playTime', duration);
+            if (typeof startDate.current === 'number') {
+                const endDate = Date.now();
+                const duration = endDate - startDate.current;
+
+                setPlayerInfo('playTime', duration);
+                localStorage.setItem('end', ((endDate - s) / 1000).toString());
+            }
         };
     }, []);
     return null;

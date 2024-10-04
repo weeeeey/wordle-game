@@ -25,8 +25,10 @@ export async function GET(req: Request) {
                         error: "'랜덤 단어를 얻어오는데 실패하였습니다. 잠시 후에 다시 시도해주세요...'",
                     });
                 word = await getRandomWord();
+
                 try {
                     await checkWord(word);
+
                     isValidWord = true;
                 } catch (error) {
                     console.log(

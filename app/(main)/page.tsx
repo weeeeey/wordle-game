@@ -1,8 +1,7 @@
 'use client';
-import { getPlayerInfo } from '@/actions';
+
 import { Button } from '@/components/ui/button';
 import { useWordNavigation } from '@/hooks';
-import { useEffect } from 'react';
 
 /**
  * 유저는 시작하기,워들 생성하기,이어하기 버튼이 화면에 포츌됩니다.
@@ -13,44 +12,20 @@ import { useEffect } from 'react';
  * 또한 playerInfo가 없다면 해당 페이지에서 초깃값을 로컬 저장소에 저장해줍니다
  */
 
-const initPlayerInfo = {
-    playTime: 0,
-    totalPlayCount: 0,
-    winCount: 0,
-    guessWordle: {
-        1: 0,
-        2: 0,
-        3: 0,
-        4: 0,
-        5: 0,
-        6: 0,
-    },
-    lastWinWord: '',
-};
 export default function MainPage() {
     const { isExist, handleClick, handleContinue } = useWordNavigation();
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            const playerInfo = getPlayerInfo();
-            if (!playerInfo)
-                localStorage.setItem(
-                    'playerInfo',
-                    JSON.stringify(initPlayerInfo)
-                );
-        }
-    }, []);
 
     return (
         <main className="flex flex-col md:flex-row items-center gap-1">
             <Button
-                onClick={() => handleClick(false)}
+                onClick={() => handleClick({ getRandomWord: false })}
                 className="rounded-full py-6 w-40"
             >
-                시작하기
+                연습게임
             </Button>
             <Button
                 variant="outline"
-                onClick={() => handleClick(true)}
+                onClick={() => handleClick({ getRandomWord: true })}
                 className="rounded-full py-6 w-40 bg-transparent border-black border text-black "
             >
                 워들 생성하기

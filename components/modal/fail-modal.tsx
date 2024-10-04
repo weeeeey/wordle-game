@@ -27,7 +27,7 @@ export default function FailModal() {
 
     const handleClick = async () => {
         try {
-            await wordNavigation(true);
+            await wordNavigation({ getRandomWord: true });
             onClose();
         } catch (error) {
             console.log(error);

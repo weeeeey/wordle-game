@@ -13,19 +13,20 @@ import { PlayerInfoType } from '@/actions/set-player-info';
  */
 export default function SuccessModal() {
     const [playerInfo, setPlayerInfo] = useState<PlayerInfoType | null>();
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setPlayerInfo(() => getPlayerInfo());
-        }
-    }, []);
 
     const { isOpen, modalType, onClose } = useModalStore();
     const isModalOpen = isOpen && modalType === 'success';
 
     const { handleClick: wordNavigation } = useWordNavigation();
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && isModalOpen) {
+            setPlayerInfo(getPlayerInfo);
+        }
+    }, [isModalOpen]);
     const handleClick = async () => {
         try {
-            await wordNavigation(true);
+            await wordNavigation({ getRandomWord: true });
             onClose();
         } catch (error) {
             console.log(error);
