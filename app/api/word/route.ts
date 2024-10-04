@@ -18,7 +18,12 @@ export async function GET(req: Request) {
 
         if (isRandom === 'false') word = 'world';
         else {
+            let loopCount = 0;
             while (!isValidWord) {
+                if (loopCount >= 5)
+                    throw new Error(
+                        '랜덤 단어를 얻어오는데 실패하였습니다. 잠시 후에 다시 시도해주세요...'
+                    );
                 word = await getRandomWord();
                 try {
                     await checkWord(word);
@@ -28,6 +33,7 @@ export async function GET(req: Request) {
                         '랜덤 단어가 사전에 정의된 단어가 아닙니다. 다시 얻어오는 중..'
                     );
                 }
+                loopCount++;
             }
         }
 
