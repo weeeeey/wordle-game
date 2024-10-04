@@ -1,6 +1,7 @@
 import { setPlayerInfo } from '@/actions';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import useToast from './use-toast';
 
 /**
  *
@@ -14,6 +15,7 @@ import { useEffect, useState } from 'react';
 const useWordNavigation = () => {
     const router = useRouter();
     const [isExist, setIsExist] = useState('');
+    const { toast } = useToast();
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -36,12 +38,19 @@ const useWordNavigation = () => {
             const res = await fetch(`/api/word?isRandom=${getRandomWord}`);
 
             const data = await res.json();
+            if (data.error) throw new Error(data.error);
             setPlayerInfo('totalPlayCount');
             setPlayerInfo('playTime', 0);
-
             router.push(`/${data.hashedWord}`);
         } catch (error) {
-            console.log(error);
+            if (error instanceof Error) {
+                toast({
+                    title: '잘못된 입력!',
+                    description: error.message,
+                    variant: 'destructive',
+                    duration: 1500,
+                });
+            }
         }
     };
     return {
