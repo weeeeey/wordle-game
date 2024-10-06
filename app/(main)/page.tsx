@@ -2,6 +2,8 @@
 
 import { Button } from '@/components/ui/button';
 import { useInitPlayerInfo, useWordNavigation } from '@/hooks';
+import { usePlayerInfoStore } from '@/store/playerinfo-store';
+import { useEffect, useState } from 'react';
 
 /**
  * 유저는 시작하기,워들 생성하기,이어하기 버튼이 화면에 포츌됩니다.
@@ -14,7 +16,6 @@ import { useInitPlayerInfo, useWordNavigation } from '@/hooks';
 
 export default function MainPage() {
     const { isExist, handleClick, handleContinue } = useWordNavigation();
-    useInitPlayerInfo();
 
     return (
         <main className="flex flex-col md:flex-row items-center gap-1">
