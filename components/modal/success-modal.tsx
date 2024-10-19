@@ -2,9 +2,10 @@ import { useModalStore } from '@/store/modal-store';
 import { DrawerDialogContiner } from './modal-container';
 import { useWordNavigation } from '@/hooks';
 import { Button } from '../ui/button';
-import { getFormatTime, getPlayerInfo } from '@/actions';
+import { getFormatTime } from '@/actions';
 import { useEffect, useState } from 'react';
 import { PlayerInfoType } from '@/actions/set-player-info';
+import { PlayerInfo, usePlayerInfoStore } from '@/store/playerinfo-store';
 
 /**
  *
@@ -12,26 +13,30 @@ import { PlayerInfoType } from '@/actions/set-player-info';
  * 유저가 지금까지 플레이한 정보가 화면에 보여집니다.
  */
 export default function SuccessModal() {
-    const [playerInfo, setPlayerInfo] = useState<PlayerInfoType | null>();
+    const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>();
 
     const { isOpen, modalType, onClose } = useModalStore();
+    const { playerInfo: globalPlayerInfo } = usePlayerInfoStore();
     const isModalOpen = isOpen && modalType === 'success';
 
-    const { handleClick: wordNavigation } = useWordNavigation();
+    const { playNewGame } = useWordNavigation();
 
     useEffect(() => {
         if (typeof window !== 'undefined' && isModalOpen) {
-            setPlayerInfo(getPlayerInfo);
+            setPlayerInfo(globalPlayerInfo);
         }
-    }, [isModalOpen]);
+    }, [isModalOpen, globalPlayerInfo]);
+
     const handleClick = async () => {
         try {
-            await wordNavigation({ getRandomWord: true });
+            await playNewGame();
             onClose();
         } catch (error) {
             console.log(error);
         }
     };
+
+    if (!isModalOpen || playerInfo === null) return;
 
     return (
         <DrawerDialogContiner isModalOpen={isModalOpen} onClose={onClose}>

@@ -2,9 +2,10 @@
 
 import { GameKeyboard, GameBoard } from './_components';
 import { useInitPlayerInfo, usePlayTime, useWordleState } from '@/hooks';
+import { usePlayerInfoStore } from '@/store/playerinfo-store';
 
 import { Delete } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * 해당 컴포넌트에서는 gameState를 통해 유저에게 현재의 상태를 보여줍니다.
@@ -25,8 +26,6 @@ export default function GamePage({ params }: GamePageProps) {
         handleEnter,
         keysboardState,
     } = useWordleState(params.hashword);
-    useInitPlayerInfo();
-    usePlayTime();
 
     return (
         <section className="flex flex-col justify-center items-center gap-y-4 h-full ">

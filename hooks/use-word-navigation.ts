@@ -2,6 +2,7 @@ import { setPlayerInfo } from '@/actions';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import useToast from './use-toast';
+import { usePlayerInfoStore } from '@/store/playerinfo-store';
 
 /**
  *
@@ -16,6 +17,7 @@ const useWordNavigation = () => {
     const router = useRouter();
     const [isExist, setIsExist] = useState('');
     const { toast } = useToast();
+    const { setPlayerInfo, playerInfo } = usePlayerInfoStore();
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -25,22 +27,17 @@ const useWordNavigation = () => {
         }
     }, []);
 
-    const handleContinue = () => {
+    const playContinueGame = () => {
         router.push(`/${isExist}`);
     };
 
-    const handleClick = async ({
-        getRandomWord,
-    }: {
-        getRandomWord: boolean;
-    }) => {
+    const playPracticeGame = async () => {
         try {
-            const res = await fetch(`/api/word?isRandom=${getRandomWord}`);
-
+            const res = await fetch(`/api/word?isRandom=false`);
             const data = await res.json();
             if (data.error) throw new Error(data.error);
-            // setPlayerInfo('totalPlayCount');
-            // setPlayerInfo('playTime', 0);
+            setPlayerInfo('isPractice', true);
+            setPlayerInfo('playTime', 0);
             router.push(`/${data.hashedWord}`);
         } catch (error) {
             if (error instanceof Error) {
@@ -53,9 +50,30 @@ const useWordNavigation = () => {
             }
         }
     };
+    const playNewGame = async () => {
+        try {
+            const res = await fetch(`/api/word?isRandom=true`);
+            const data = await res.json();
+            if (data.error) throw new Error(data.error);
+            setPlayerInfo('isPractice', false);
+            setPlayerInfo('totalPlayCount', playerInfo.totalPlayCount + 1);
+            router.push(`/${data.hashedWord}`);
+        } catch (error) {
+            if (error instanceof Error) {
+                toast({
+                    title: '잘못된 입력!',
+                    description: error.message,
+                    variant: 'destructive',
+                    duration: 1500,
+                });
+            }
+        }
+    };
+
     return {
-        handleClick,
-        handleContinue,
+        playNewGame,
+        playPracticeGame,
+        playContinueGame,
         isExist,
     };
 };

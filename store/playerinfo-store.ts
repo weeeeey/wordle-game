@@ -1,50 +1,46 @@
 import { create } from 'zustand';
 
-interface usePlayerInfoStoreProps {
+const LOCALKEY = 'playerInfo';
+
+type GuessWordle = number[];
+
+export interface PlayerInfo {
     playTime: number;
     totalPlayCount: number;
     winCount: number;
-    guessWordle: {
-        one: number;
-        two: number;
-        three: number;
-        four: number;
-        five: number;
-        six: number;
-    };
+    guessWordle: GuessWordle;
     isPractice: boolean;
-    setPlayerInfo: (key: PlayerInfoKey, value: number | boolean) => void;
-    getPlayerInfo: (key: PlayerInfoKey) => number | boolean | object;
+    latestDate: string;
+}
+
+interface usePlayerInfoStoreProps {
+    playerInfo: PlayerInfo;
+    setPlayerInfo: (
+        key: PlayerInfoKey,
+        value: number | boolean | string
+    ) => void;
+    incrementGuessWordle: (guessCount: number) => void;
+    resetGuessWordle: () => void;
     saveToLocalStorage: () => void;
 }
 
-type PlayerInfoPropsType = Omit<
-    usePlayerInfoStoreProps,
-    'setPlayerInfo' | 'getPlayerInfo' | 'saveToLocalStorage'
->;
-
-type PlayerInfoKey =
+export type PlayerInfoKey =
     | 'playTime'
     | 'totalPlayCount'
     | 'winCount'
     | 'isPractice'
-    | 'guessWordle'
-    | 'guessWordle.one'
-    | 'guessWordle.two'
-    | 'guessWordle.three'
-    | 'guessWordle.four'
-    | 'guessWordle.five';
+    | 'latestDate';
 
-const LOCALKEY = 'playerInfo';
-
-const initPlayerInfo = {
+const initPlayerInfo: PlayerInfo = {
     playTime: 0,
-    guessWordle: { one: 0, two: 0, three: 0, four: 0, five: 0, six: 0 },
+    guessWordle: [0, 0, 0, 0, 0, 0],
     isPractice: false,
     winCount: 0,
     totalPlayCount: 0,
+    latestDate: Date.now().toString(),
 };
-const getInitPlayerInfo = () => {
+
+const getInitPlayerInfo = (): PlayerInfo => {
     if (typeof window === 'undefined') {
         return initPlayerInfo;
     }
@@ -52,49 +48,47 @@ const getInitPlayerInfo = () => {
         localStorage.getItem(LOCALKEY) || JSON.stringify(initPlayerInfo)
     );
 };
+
 export const usePlayerInfoStore = create<usePlayerInfoStoreProps>(
     (set, get) => ({
-        ...getInitPlayerInfo(),
-        setPlayerInfo: (key: PlayerInfoKey, value: number | boolean) =>
-            set((previous) => {
-                const properties = key.split('.');
-                if (properties.length === 1) {
-                    return {
-                        ...previous,
-                        [key]: value,
-                    };
-                } else {
-                    return {
-                        ...previous,
-                        guessWordle: {
-                            ...previous.guessWordle,
-                            [properties[1]]: value,
-                        },
-                    };
+        playerInfo: getInitPlayerInfo(),
+        setPlayerInfo: (key: PlayerInfoKey, value: number | boolean | string) =>
+            set((state) => ({
+                playerInfo: {
+                    ...state.playerInfo,
+                    [key]: value,
+                },
+            })),
+        incrementGuessWordle: (guessCount: number) =>
+            set((state) => {
+                const newGuessWordle = [...state.playerInfo.guessWordle];
+                if (guessCount >= 1 && guessCount <= 6) {
+                    newGuessWordle[guessCount - 1]++;
                 }
+                return {
+                    playerInfo: {
+                        ...state.playerInfo,
+                        guessWordle: newGuessWordle,
+                    },
+                };
             }),
-        getPlayerInfo: (key: PlayerInfoKey): number | boolean | object => {
-            const properties = key.split('.');
-            const state = get();
-
-            if (properties.length === 1)
-                return state[key as keyof typeof state];
-            else
-                return state.guessWordle[
-                    properties[1] as keyof typeof state.guessWordle
-                ];
-        },
+        resetGuessWordle: () =>
+            set((state) => ({
+                playerInfo: {
+                    ...state.playerInfo,
+                    guessWordle: [0, 0, 0, 0, 0, 0],
+                },
+            })),
         saveToLocalStorage: () => {
-            const state = get();
-            const playerInfo: PlayerInfoPropsType = {
-                guessWordle: state.guessWordle,
-                isPractice: state.isPractice,
-                playTime: state.playTime,
-                totalPlayCount: state.totalPlayCount,
-                winCount: state.winCount,
-            };
+            const { playerInfo } = get();
             if (typeof window === 'undefined') return;
-            window.localStorage.setItem(LOCALKEY, JSON.stringify(playerInfo));
+            window.localStorage.setItem(
+                LOCALKEY,
+                JSON.stringify({
+                    ...playerInfo,
+                    latestDate: Date.now().toString(),
+                })
+            );
         },
     })
 );
