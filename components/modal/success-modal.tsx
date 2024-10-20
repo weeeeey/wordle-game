@@ -3,9 +3,7 @@ import { DrawerDialogContiner } from './modal-container';
 import { useWordNavigation } from '@/hooks';
 import { Button } from '../ui/button';
 import { getFormatTime } from '@/actions';
-import { useEffect, useState } from 'react';
-import { PlayerInfoType } from '@/actions/set-player-info';
-import { PlayerInfo, usePlayerInfoStore } from '@/store/playerinfo-store';
+import { usePlayerInfoStore } from '@/store/playerinfo-store';
 
 /**
  *
@@ -28,7 +26,7 @@ export default function SuccessModal() {
         }
     };
 
-    if (!isModalOpen || playerInfo === null) return;
+    if (!isModalOpen && !playerInfo.playTime) return;
 
     return (
         <DrawerDialogContiner isModalOpen={isModalOpen} onClose={onClose}>
@@ -38,7 +36,7 @@ export default function SuccessModal() {
                     <p className="text-gray-500">
                         성공까지
                         <span className="font-semibold text-black mx-2">
-                            {playerInfo.playTime} 초
+                            {getFormatTime(playerInfo.playTime)}
                         </span>
                         걸렸습니다.
                     </p>
@@ -80,7 +78,7 @@ export default function SuccessModal() {
                                 ([key, value]) => (
                                     <li key={key} className="space-x-2 ">
                                         <span className="text-gray-500">
-                                            {key}번 만에 성공한 횟수:
+                                            {+key + 1}번 만에 성공한 횟수:
                                         </span>
                                         <span className="font-semibold">
                                             {value}

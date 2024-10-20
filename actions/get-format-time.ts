@@ -9,16 +9,16 @@ import { ko } from 'date-fns/locale';
 const getFormatTime = (playTime: number) => {
     const duration = intervalToDuration({
         start: 0,
-        end: playTime,
+        end: playTime * 1000,
     });
 
-    const formattedDuration = formatDuration(duration, {
+    const formatTime = formatDuration(duration, {
         format: ['hours', 'minutes', 'seconds'],
         locale: ko,
         delimiter: ' ',
     });
 
-    return formattedDuration;
+    return formatTime;
 };
 
 export default getFormatTime;

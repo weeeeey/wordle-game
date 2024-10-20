@@ -1,11 +1,9 @@
 'use client';
 
 import { GameKeyboard, GameBoard } from './_components';
-import { useInitPlayerInfo, usePlayTime, useWordleState } from '@/hooks';
-import { usePlayerInfoStore } from '@/store/playerinfo-store';
+import { useWordleState } from '@/hooks';
 
 import { Delete } from 'lucide-react';
-import { useEffect, useRef } from 'react';
 
 /**
  * 해당 컴포넌트에서는 gameState를 통해 유저에게 현재의 상태를 보여줍니다.
