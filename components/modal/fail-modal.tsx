@@ -5,6 +5,7 @@ import { useWordNavigation } from '@/hooks';
 import { getFormatTime, getPlayerInfo } from '@/actions';
 import { useEffect, useState } from 'react';
 import { PlayerInfoType } from '@/actions/set-player-info';
+import { PlayerInfo, usePlayerInfoStore } from '@/store/playerinfo-store';
 
 /**
  *
@@ -13,26 +14,22 @@ import { PlayerInfoType } from '@/actions/set-player-info';
  */
 
 export default function FailModal() {
-    const [playerInfo, setPlayerInfo] = useState<PlayerInfoType | null>();
-    useEffect(() => {
-        if (typeof window !== 'undefined') {
-            setPlayerInfo(() => getPlayerInfo());
-        }
-    }, []);
-
     const { isOpen, modalType, onClose, data } = useModalStore();
+    const { playerInfo } = usePlayerInfoStore();
     const isModalOpen = isOpen && modalType === 'fail';
 
-    const { handleClick: wordNavigation } = useWordNavigation();
+    const { playNewGame } = useWordNavigation();
 
     const handleClick = async () => {
         try {
-            await wordNavigation({ getRandomWord: true });
+            await playNewGame();
             onClose();
         } catch (error) {
             console.log(error);
         }
     };
+
+    if (!isModalOpen || playerInfo === null) return;
     return (
         <DrawerDialogContiner isModalOpen={isModalOpen} onClose={onClose}>
             <section className="my-10 space-y-10">

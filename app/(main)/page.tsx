@@ -13,26 +13,27 @@ import { useWordNavigation } from '@/hooks';
  */
 
 export default function MainPage() {
-    const { isExist, handleClick, handleContinue } = useWordNavigation();
+    const { isExist, playContinueGame, playNewGame, playPracticeGame } =
+        useWordNavigation();
 
     return (
         <main className="flex flex-col md:flex-row items-center gap-1">
             <Button
-                onClick={() => handleClick({ getRandomWord: false })}
+                onClick={playPracticeGame}
                 className="rounded-full py-6 w-40"
             >
                 연습게임
             </Button>
             <Button
                 variant="outline"
-                onClick={() => handleClick({ getRandomWord: true })}
+                onClick={playNewGame}
                 className="rounded-full py-6 w-40 bg-transparent border-black border text-black "
             >
                 워들 생성하기
             </Button>
             {isExist && (
                 <Button
-                    onClick={handleContinue}
+                    onClick={playContinueGame}
                     className="rounded-full py-6 w-40"
                 >
                     이어서 하기

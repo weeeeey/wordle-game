@@ -20,10 +20,10 @@ export async function GET(req: Request) {
         else {
             for (let i = 0; i < 5; i++) {
                 if (isValidWord) break;
-                if (i === 4)
-                    return NextResponse.json({
-                        error: "'랜덤 단어를 얻어오는데 실패하였습니다. 잠시 후에 다시 시도해주세요...'",
-                    });
+                if (i === 4) {
+                    word = 'false';
+                    break;
+                }
                 word = await getRandomWord();
 
                 try {
