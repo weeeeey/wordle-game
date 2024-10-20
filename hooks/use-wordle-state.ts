@@ -6,7 +6,7 @@ import useKeysboardState from './use-keyboard-state';
 import { checkVisited, checkWord, decryptWord } from '@/actions';
 import { checkWordMatch } from '@/lib/utils';
 import { keyboardCode } from '@/constants/keyboard-map';
-import { PlayerInfoKey, usePlayerInfoStore } from '@/store/playerinfo-store';
+import { usePlayerInfoStore } from '@/store/playerinfo-store';
 
 export type CheckedWordsType = {
     correct: number[];
@@ -54,6 +54,7 @@ const useWordleState = (hashword: string) => {
         setPlayerInfo,
         playerInfo,
         incrementGuessWordle,
+        incrementPlaytime,
         saveToLocalStorage,
     } = usePlayerInfoStore();
     const answerWord = useMemo(() => decryptWord(hashword), [hashword]);
@@ -159,8 +160,14 @@ const useWordleState = (hashword: string) => {
 
             if (correct.length === 5) {
                 setTimeout(() => updateGameState({ status: 'success' }), 1750);
+                incrementPlaytime();
+                setPlayerInfo('winCount', playerInfo.winCount + 1);
+                incrementGuessWordle(gameState.completedRow + 1);
+                saveToLocalStorage();
             } else if (willCheckedRow === 5) {
                 setTimeout(() => updateGameState({ status: 'fail' }), 1750);
+                incrementPlaytime();
+                saveToLocalStorage();
             }
         } catch (error) {
             if (error instanceof Error) {
@@ -176,7 +183,18 @@ const useWordleState = (hashword: string) => {
                 setTimeout(() => updateGameState({ errorRow: -1 }), 1000);
             }
         }
-    }, [gameState, answerWord, updateGameState, updateKeysboardState, toast]);
+    }, [
+        gameState,
+        answerWord,
+        updateGameState,
+        updateKeysboardState,
+        toast,
+        incrementGuessWordle,
+        incrementPlaytime,
+        setPlayerInfo,
+        playerInfo.winCount,
+        saveToLocalStorage,
+    ]);
 
     useEffect(() => {
         const handleKeyboardEvent = (e: KeyboardEvent) => {
@@ -194,35 +212,31 @@ const useWordleState = (hashword: string) => {
     }, [handleChange, handleDelete, handleEnter]);
 
     useEffect(() => {
-        const handlePlayTime = () => {
-            const diffTime = Math.floor(
-                (Date.now() - parseInt(playerInfo.latestDate)) / 1000
-            );
-            setPlayerInfo('playTime', playerInfo.playTime + diffTime);
-        };
-
         if (gameState.status === 'success') {
-            if (playerInfo.isPractice === false) {
-                setPlayerInfo('winCount', playerInfo.winCount + 1);
-
-                incrementGuessWordle(gameState.completedRow + 1);
-
-                setPlayerInfo('playTime', 2);
-                onOpen('success');
-            }
+            onOpen('success');
         } else if (gameState.status === 'fail') {
-            // handlePlayTime();
             onOpen('fail', answerWord);
         }
-    }, [gameState.status]);
+    }, [gameState.status, onOpen, answerWord]);
 
     useEffect(() => {
         const isVisited = checkVisited();
         if (!isVisited) onOpen('how');
     }, [onOpen]);
+
     useEffect(() => {
-        return () => saveToLocalStorage();
-    }, [saveToLocalStorage]);
+        if (typeof window === 'undefined') return;
+        const local = window.localStorage.getItem('wordle');
+        if (!local) return;
+        const localWordle = JSON.parse(local);
+
+        return () => {
+            if (localWordle.status === 'pending') {
+                incrementPlaytime();
+            }
+            saveToLocalStorage();
+        };
+    }, [saveToLocalStorage, incrementPlaytime]);
 
     return {
         gameState,

@@ -13,19 +13,11 @@ import { PlayerInfo, usePlayerInfoStore } from '@/store/playerinfo-store';
  * 유저가 지금까지 플레이한 정보가 화면에 보여집니다.
  */
 export default function SuccessModal() {
-    const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>();
-
     const { isOpen, modalType, onClose } = useModalStore();
-    const { playerInfo: globalPlayerInfo } = usePlayerInfoStore();
+    const { playerInfo } = usePlayerInfoStore();
     const isModalOpen = isOpen && modalType === 'success';
 
     const { playNewGame } = useWordNavigation();
-
-    useEffect(() => {
-        if (typeof window !== 'undefined' && isModalOpen) {
-            setPlayerInfo(globalPlayerInfo);
-        }
-    }, [isModalOpen, globalPlayerInfo]);
 
     const handleClick = async () => {
         try {
@@ -46,7 +38,7 @@ export default function SuccessModal() {
                     <p className="text-gray-500">
                         성공까지
                         <span className="font-semibold text-black mx-2">
-                            {playerInfo && getFormatTime(playerInfo.playTime)}
+                            {playerInfo.playTime} 초
                         </span>
                         걸렸습니다.
                     </p>
@@ -56,15 +48,15 @@ export default function SuccessModal() {
                         <ul>
                             <li className="space-x-2">
                                 <span className="text-gray-500">
-                                    현재까지 Wordle을 승리한 횟수:
+                                    Wordle 도전 횟수:
                                 </span>
                                 <span className="font-semibold">
-                                    {playerInfo.winCount}회
+                                    {playerInfo.totalPlayCount}회
                                 </span>
                             </li>
                             <li className="space-x-2">
                                 <span className="text-gray-500">
-                                    현재까지의 Wordle 승률:
+                                    Wordle 승률:
                                 </span>
                                 <span className="font-semibold">
                                     {(
@@ -75,6 +67,15 @@ export default function SuccessModal() {
                                     %
                                 </span>
                             </li>
+                            <li className="space-x-2">
+                                <span className="text-gray-500">
+                                    현재까지 승리한 횟수:
+                                </span>
+                                <span className="font-semibold">
+                                    {playerInfo.winCount}회
+                                </span>
+                            </li>
+
                             {Object.entries(playerInfo.guessWordle).map(
                                 ([key, value]) => (
                                     <li key={key} className="space-x-2 ">

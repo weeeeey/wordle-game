@@ -14,19 +14,11 @@ import { PlayerInfo, usePlayerInfoStore } from '@/store/playerinfo-store';
  */
 
 export default function FailModal() {
-    const [playerInfo, setPlayerInfo] = useState<PlayerInfo | null>();
-
     const { isOpen, modalType, onClose, data } = useModalStore();
-    const { playerInfo: globalPlayerInfo } = usePlayerInfoStore();
+    const { playerInfo } = usePlayerInfoStore();
     const isModalOpen = isOpen && modalType === 'fail';
 
     const { playNewGame } = useWordNavigation();
-
-    useEffect(() => {
-        if (typeof window !== 'undefined' && isModalOpen) {
-            setPlayerInfo(globalPlayerInfo);
-        }
-    }, [isModalOpen, globalPlayerInfo]);
 
     const handleClick = async () => {
         try {

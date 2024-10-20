@@ -1,3 +1,4 @@
+import { format } from 'date-fns';
 import { create } from 'zustand';
 
 const LOCALKEY = 'playerInfo';
@@ -10,7 +11,7 @@ export interface PlayerInfo {
     winCount: number;
     guessWordle: GuessWordle;
     isPractice: boolean;
-    latestDate: string;
+    latestDate: number;
 }
 
 interface usePlayerInfoStoreProps {
@@ -20,6 +21,7 @@ interface usePlayerInfoStoreProps {
         value: number | boolean | string
     ) => void;
     incrementGuessWordle: (guessCount: number) => void;
+    incrementPlaytime: () => void;
     resetGuessWordle: () => void;
     saveToLocalStorage: () => void;
 }
@@ -37,7 +39,7 @@ const initPlayerInfo: PlayerInfo = {
     isPractice: false,
     winCount: 0,
     totalPlayCount: 0,
-    latestDate: Date.now().toString(),
+    latestDate: Date.now(),
 };
 
 const getInitPlayerInfo = (): PlayerInfo => {
@@ -72,6 +74,21 @@ export const usePlayerInfoStore = create<usePlayerInfoStoreProps>(
                     },
                 };
             }),
+        incrementPlaytime: () => {
+            set((state) => {
+                const currentTime = Date.now();
+                const previousTime = state.playerInfo.latestDate;
+                const diff = Math.floor((currentTime - previousTime) / 1000);
+
+                return {
+                    playerInfo: {
+                        ...state.playerInfo,
+                        playTime: state.playerInfo.playTime + diff,
+                        latestDate: currentTime,
+                    },
+                };
+            });
+        },
         resetGuessWordle: () =>
             set((state) => ({
                 playerInfo: {
@@ -79,16 +96,11 @@ export const usePlayerInfoStore = create<usePlayerInfoStoreProps>(
                     guessWordle: [0, 0, 0, 0, 0, 0],
                 },
             })),
+
         saveToLocalStorage: () => {
             const { playerInfo } = get();
             if (typeof window === 'undefined') return;
-            window.localStorage.setItem(
-                LOCALKEY,
-                JSON.stringify({
-                    ...playerInfo,
-                    latestDate: Date.now().toString(),
-                })
-            );
+            window.localStorage.setItem(LOCALKEY, JSON.stringify(playerInfo));
         },
     })
 );

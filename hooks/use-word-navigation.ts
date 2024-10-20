@@ -17,7 +17,8 @@ const useWordNavigation = () => {
     const router = useRouter();
     const [isExist, setIsExist] = useState('');
     const { toast } = useToast();
-    const { setPlayerInfo, playerInfo } = usePlayerInfoStore();
+    const { setPlayerInfo, playerInfo, saveToLocalStorage } =
+        usePlayerInfoStore();
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
@@ -38,6 +39,8 @@ const useWordNavigation = () => {
             if (data.error) throw new Error(data.error);
             setPlayerInfo('isPractice', true);
             setPlayerInfo('playTime', 0);
+            setPlayerInfo('latestDate', Date.now());
+            saveToLocalStorage();
             router.push(`/${data.hashedWord}`);
         } catch (error) {
             if (error instanceof Error) {
@@ -57,6 +60,9 @@ const useWordNavigation = () => {
             if (data.error) throw new Error(data.error);
             setPlayerInfo('isPractice', false);
             setPlayerInfo('totalPlayCount', playerInfo.totalPlayCount + 1);
+            setPlayerInfo('playTime', 0);
+            setPlayerInfo('latestDate', Date.now());
+            saveToLocalStorage();
             router.push(`/${data.hashedWord}`);
         } catch (error) {
             if (error instanceof Error) {
