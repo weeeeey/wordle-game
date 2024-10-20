@@ -2,10 +2,8 @@ import { useModalStore } from '@/store/modal-store';
 import { DrawerDialogContiner } from './modal-container';
 import { Button } from '../ui/button';
 import { useWordNavigation } from '@/hooks';
-import { getFormatTime, getPlayerInfo } from '@/actions';
-import { useEffect, useState } from 'react';
-import { PlayerInfoType } from '@/actions/set-player-info';
-import { PlayerInfo, usePlayerInfoStore } from '@/store/playerinfo-store';
+import { getFormatTime } from '@/actions';
+import { usePlayerInfoStore } from '@/store/playerinfo-store';
 
 /**
  *
@@ -58,15 +56,15 @@ export default function FailModal() {
                         <ul>
                             <li className="space-x-2">
                                 <span className="text-gray-500">
-                                    현재까지 Wordle을 승리한 횟수:
+                                    Wordle 도전 횟수:
                                 </span>
                                 <span className="font-semibold">
-                                    {playerInfo.winCount}회
+                                    {playerInfo.totalPlayCount}회
                                 </span>
                             </li>
                             <li className="space-x-2">
                                 <span className="text-gray-500">
-                                    현재까지의 Wordle 승률:
+                                    Wordle 승률:
                                 </span>
                                 <span className="font-semibold">
                                     {(
@@ -77,11 +75,20 @@ export default function FailModal() {
                                     %
                                 </span>
                             </li>
+                            <li className="space-x-2">
+                                <span className="text-gray-500">
+                                    현재까지 승리한 횟수:
+                                </span>
+                                <span className="font-semibold">
+                                    {playerInfo.winCount}회
+                                </span>
+                            </li>
+
                             {Object.entries(playerInfo.guessWordle).map(
                                 ([key, value]) => (
                                     <li key={key} className="space-x-2 ">
                                         <span className="text-gray-500">
-                                            {key}번 만에 성공한 횟수:
+                                            {+key + 1}번 만에 성공한 횟수:
                                         </span>
                                         <span className="font-semibold">
                                             {value}
@@ -91,11 +98,12 @@ export default function FailModal() {
                             )}
                         </ul>
                     )}
+
                     <Button
                         onClick={handleClick}
                         className="rounded-full py-6 w-40"
                     >
-                        다시 시작하기
+                        새로 시작하기
                     </Button>
                 </article>
             </section>

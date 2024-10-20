@@ -1,4 +1,3 @@
-import { setPlayerInfo } from '@/actions';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import useToast from './use-toast';
@@ -29,6 +28,8 @@ const useWordNavigation = () => {
     }, []);
 
     const playContinueGame = () => {
+        setPlayerInfo('latestDate', Date.now());
+        saveToLocalStorage();
         router.push(`/${isExist}`);
     };
 
